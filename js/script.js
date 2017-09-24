@@ -1,12 +1,6 @@
-var config = {
-	apiKey: "AIzaSyAkpDeRtBFftrEpdQTXx_FYfsE-RmYJ16c",
-	authDomain: "devfest-2dadc.firebaseapp.com",
-	databaseURL: "https://devfest-2dadc.firebaseio.com",
-	projectId: "devfest-2dadc",
-	storageBucket: "devfest-2dadc.appspot.com",
-	messagingSenderId: "417837573400"
-};
-firebase.initializeApp(config);
+//GO TO FIREBASE CONSOLE, MAKE A NEW PROJECT AND COPY PASTE THE CONFIG HERE
+
+
 
 let auth = null;
 
@@ -17,36 +11,27 @@ var database = firebase.database();
 let listener = firebase.database().ref('messages');
 function populate()
 {
-	listener.on('child_added', function(data) {
-		if(data.val().message !== '')
-			$(".messages").append('<div class="bubble"><span id="emailBubble">' + data.val().email + '</span><br>' + data.val().message + '</div>')
-		else
-		{
-			let storageRef = firebase.storage().ref();
-
-			var starsRef = storageRef.child('' + data.val().attachment);
-
-			starsRef.getDownloadURL().then(function(url) {
-				$(".messages").append('<div class="bubble"><span id="emailBubble">' + data.val().email + '</span><br><img src="' + url + '" /></div>');
-			}).catch(function(error) {
-			});
-			
-		}
-	});
+	
+	// $(".messages").append('<div class="bubble"><span id="emailBubble">' + data.val().email + '</span><br>' + data.val().message + '</div>')
+	//FUNCTION TO POPULATE MESSAGES AND IMAGES.
+		
 }
 
 function runScript(e) {
 	if (e.keyCode == 13) {
+		if($("#message").val() === '')
+		{
+			toastr.error('Message can\'t be empty')
+		}
+		else
+		{
+			let pushMessages = firebase.database().ref('messages').push();
+			let message = $("#message").val();
+			
+			//FUNCTION TO ADD MESSAGES TO THE DATABASE
 
-		let pushMessages = firebase.database().ref('messages').push();
-		let message = $("#message").val();
-		pushMessages.set({
-			email: auth.currentUser.email,
-			message: message,
-			attachment: null
-		});
-
-		$("#message").val('');
+			$("#message").val('');
+		}
 
 	}
 }
@@ -70,22 +55,7 @@ $("#login").on('click', function(ev){
 	let email = $("#email").val();
 	let password = $("#password").val();
 
-	firebase.auth().signInWithEmailAndPassword(email, password).then(function(status){
-		auth = firebase.auth();
-		toastr.success('Successful!');
-		$(".loginRegister").fadeOut(800).promise().done(function(){
-			$(".chat").fadeIn();
-			populate();
-		});
-
-	})
-	.catch(function(error) {
-	  
-	  
-	  var errorCode = error.code;
-	  var errorMessage = error.message;
-	  toastr.error(errorMessage);
-	});
+	//FIREBASE LOGIN CODE
 })
 
 $("#register").on('click', function(ev){
@@ -94,24 +64,7 @@ $("#register").on('click', function(ev){
 	let password = $("#passReg").val();
 	let confirm = $("#confirmPassReg").val();
 
-	
-
-	if(password === confirm)
-	{
-		firebase.auth().createUserWithEmailAndPassword(email, password)
-		.then(function(user){
-			toastr.success('Registered successfully!');
-
-		})
-		.catch(function(error) {
-
-			var errorCode = error.code;
-			var errorMessage = error.message;
-			toastr.error(errorMessage);
-		});
-	}
-	else
-		toastr.error('Passwords do not match.');
+	//FIREBASE REGISTRATION CODE HERE. CHECK PASSWORD AND CONFIRM PASSWORD
 });
 
 
@@ -125,15 +78,6 @@ $("#files").change(function(){
 	let name = file[0].name + Date.now()
 	let images = storageRef.child(name);
 
-	images.put(file[0]).then(function(snapshot){
-		let pushMessages = firebase.database().ref('messages').push();
-		
-		pushMessages.set({
-			email: auth.currentUser.email,
-			message: '',
-			attachment: name
-		});
-		console.log('Done');
-	})
+	//FIREBASE UPLOAD FILE HERE.
 })
 
