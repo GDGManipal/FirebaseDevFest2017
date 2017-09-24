@@ -18,8 +18,20 @@ let listener = firebase.database().ref('messages');
 function populate()
 {
 	listener.on('child_added', function(data) {
-		
-		$(".messages").append('<div class="bubble"><span id="emailBubble">' + data.val().email + '</span><br>' + data.val().message + '</div>')
+		if(data.val().message !== '')
+			$(".messages").append('<div class="bubble"><span id="emailBubble">' + data.val().email + '</span><br>' + data.val().message + '</div>')
+		else
+		{
+			let storageRef = firebase.storage().ref();
+
+			var starsRef = storageRef.child('' + data.val().attachment);
+
+			starsRef.getDownloadURL().then(function(url) {
+				$(".messages").append('<div class="bubble"><span id="emailBubble">' + data.val().email + '</span><br><img src="' + url + '" /></div>');
+			}).catch(function(error) {
+			});
+			
+		}
 	});
 }
 
@@ -30,7 +42,8 @@ function runScript(e) {
 		let message = $("#message").val();
 		pushMessages.set({
 			email: auth.currentUser.email,
-			message: message
+			message: message,
+			attachment: null
 		});
 
 		$("#message").val('');
@@ -100,4 +113,27 @@ $("#register").on('click', function(ev){
 	else
 		toastr.error('Passwords do not match.');
 });
+
+
+$("#uploadFile").on('click', function(ev){
+	$("#files").click();
+})
+
+$("#files").change(function(){
+	let file = this.files;
+	let storageRef = firebase.storage().ref();
+	let name = file[0].name + Date.now()
+	let images = storageRef.child(name);
+
+	images.put(file[0]).then(function(snapshot){
+		let pushMessages = firebase.database().ref('messages').push();
+		
+		pushMessages.set({
+			email: auth.currentUser.email,
+			message: '',
+			attachment: name
+		});
+		console.log('Done');
+	})
+})
 

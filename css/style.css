@@ -473,7 +473,7 @@ body {
 
 .bubble
 {
-  width: 160px;
+  width: auto;
   height: auto;
   box-sizing: border-box;
   padding: 15px;
