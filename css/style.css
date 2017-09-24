@@ -440,4 +440,49 @@ body {
     opacity: 0;
   }
 }
- 
+
+
+/*CHAT STYLE*/
+
+.chat
+{
+  display: none;
+}
+
+.messages
+{
+  height: 85%;
+  overflow-y: scroll;
+}
+
+.input
+{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+.input input
+{
+  width: 100%;
+  height: 30px;
+}
+
+.bubble
+{
+  width: 160px;
+  height: auto;
+  box-sizing: border-box;
+  padding: 15px;
+  word-break: break-word;
+  background: lightyellow;
+  margin-bottom: 20px;
+}
+
+#emailBubble
+{
+  font-size: 11px;
+}
