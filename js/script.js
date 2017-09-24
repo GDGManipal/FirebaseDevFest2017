@@ -37,16 +37,22 @@ function populate()
 
 function runScript(e) {
 	if (e.keyCode == 13) {
+		if($("#message").val() === '')
+		{
+			toastr.error('Message can\'t be empty')
+		}
+		else
+		{
+			let pushMessages = firebase.database().ref('messages').push();
+			let message = $("#message").val();
+			pushMessages.set({
+				email: auth.currentUser.email,
+				message: message,
+				attachment: null
+			});
 
-		let pushMessages = firebase.database().ref('messages').push();
-		let message = $("#message").val();
-		pushMessages.set({
-			email: auth.currentUser.email,
-			message: message,
-			attachment: null
-		});
-
-		$("#message").val('');
+			$("#message").val('');
+		}
 
 	}
 }
@@ -80,11 +86,11 @@ $("#login").on('click', function(ev){
 
 	})
 	.catch(function(error) {
-	  
-	  
-	  var errorCode = error.code;
-	  var errorMessage = error.message;
-	  toastr.error(errorMessage);
+		
+		
+		var errorCode = error.code;
+		var errorMessage = error.message;
+		toastr.error(errorMessage);
 	});
 })
 
